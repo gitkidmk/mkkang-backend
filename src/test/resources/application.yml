@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: mkkang-backend
+  profiles:
+    include: test, oauth

@@ -1,0 +1,34 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: jdbc:mariadb://${DB_URL}:${DB_PORT}/rootdb
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PW}
+  jpa:
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MariaDBDialect
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+    hibernate:
+      ddl-auto: create
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      password: ${REDIS_PW}
+      port: ${REDIS_PORT}
+jwt:
+  accesstoken:
+    secretkey: ${ACCESS_SECRET_KEY}
+    expiration: 300
+  refreshtoken:
+    secretkey: ${REFRESH_SECRET_KEY}
+    expiration: 3600
+
+logging:
+  level:
+    root: INFO
+    kr.mkkang.mkkangbackend: DEBUG
