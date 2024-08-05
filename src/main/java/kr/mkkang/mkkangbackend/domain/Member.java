@@ -19,15 +19,18 @@ public class Member {
 
     private String profile;
 
+    private String registrationId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MemberRole role;
 
     @Builder
-    public Member(String name, String email, String profile, MemberRole role) {
+    public Member(String name, String email, String profile, String registrationId, MemberRole role) {
         this.name = name;
         this.email = email;
         this.profile = profile;
+        this.registrationId = registrationId;
         this.role = role;
     }
 

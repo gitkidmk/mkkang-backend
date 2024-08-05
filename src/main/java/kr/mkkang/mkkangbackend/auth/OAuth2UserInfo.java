@@ -14,7 +14,8 @@ import java.util.Map;
 public record OAuth2UserInfo(
         String name,
         String email,
-        String profile
+        String profile,
+        String registrationId
 ) {
 
     public static OAuth2UserInfo of(String registrationId, Map<String, Object> attributes) {
@@ -30,6 +31,7 @@ public record OAuth2UserInfo(
                 .name((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
                 .profile((String) attributes.get("picture"))
+                .registrationId("google")
                 .build();
     }
 
@@ -41,14 +43,16 @@ public record OAuth2UserInfo(
                 .name((String) profile.get("nickname"))
                 .email((String) account.get("email"))
                 .profile((String) profile.get("profile_image_url"))
+                .registrationId("kakao")
                 .build();
     }
 
     public Member toEntity() {
-        return Member.builder()
+         return Member.builder()
                 .name(name)
                 .email(email)
                 .profile(profile)
+                .registrationId(registrationId)
                 .role(MemberRole.ANYONE)
                 .build();
     }
