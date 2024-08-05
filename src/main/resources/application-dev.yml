@@ -8,7 +8,6 @@ spring:
     password: ${DB_PW}
   jpa:
     open-in-view: false
-    database-platform: org.hibernate.dialect.MariaDBDialect
     properties:
       hibernate:
         format_sql: true
