@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -27,11 +28,15 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         Assert.notNull(userRequest, "userRequest cannot be null");
 
+        Map<String, Object> attributes = new HashMap<>();
         // 1. 유저 정보(attributes) 가져오기
         Map<String, Object> oAuth2UserAttributes = super.loadUser(userRequest).getAttributes();
 
         // 2. resistrationId 가져오기 (third-party id)
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
+
+        attributes.putAll(oAuth2UserAttributes);
+        attributes.put("registrationId", registrationId);
 
         // 3. userNameAttributeName 가져오기
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
@@ -49,7 +54,7 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
         // OAuth2User로 반환
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(member.getRole().getKey())),
-                oAuth2UserAttributes,
+                attributes,
                 userNameAttributeName);
     }
 

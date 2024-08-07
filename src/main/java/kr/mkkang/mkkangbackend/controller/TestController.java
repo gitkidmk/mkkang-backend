@@ -1,11 +1,15 @@
 package kr.mkkang.mkkangbackend.controller;
 
+import kr.mkkang.mkkangbackend.domain.Member;
 import kr.mkkang.mkkangbackend.redis.Token;
 import kr.mkkang.mkkangbackend.redis.TokenRepository;
+import kr.mkkang.mkkangbackend.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -13,15 +17,13 @@ public class TestController {
     @Autowired
     TokenRepository tokenRepository;
 
+    @Autowired
+    MemberService memberService;
+
     @GetMapping("/")
     public void test() {
         Token saved = tokenRepository.save(new Token("abc", "cdf"));
         log.info(saved.toString());
-    }
-
-    @GetMapping("/happy")
-    public void happy() {
-        log.info("happy");
     }
 
     @GetMapping("/admin")
@@ -30,7 +32,13 @@ public class TestController {
     }
 
     @GetMapping("/family")
-    public void family() {
-        log.info("family");
+    public List<Member> family() {
+        return memberService.getAllMembers();
     }
+
+    @GetMapping("/any")
+    public void any() {
+        log.info("any");
+    }
+
 }

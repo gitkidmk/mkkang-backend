@@ -14,6 +14,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -43,13 +45,15 @@ public class SecurityConfig {
                 // cors
                 .cors(Customizer.withDefaults()) // 이거 지워도 cross origin resource shared 막아줘야함
                 // csrf
-                .csrf(Customizer.withDefaults())
+//                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .csrf(csrf -> csrf.disable())
                 // authorizeHttpRequests : login 요청은 permitAll, 그 외의 요청은 인증검사
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/login/**").permitAll()
+                        .requestMatchers("/logout/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/family/**").hasRole("FAMILY")
-                        .requestMatchers("/**").hasRole("ANY"))
+                        .requestMatchers("/family/**").hasAnyRole("FAMILY", "ADMIN")
+                        .requestMatchers("/**").hasAnyRole("ANY", "FAMILY", "ADMIN"))
                 // addFilterBefore : token validation filter가 최상단에 배치해 아래 filter까지 가서 spring이 고생하지 않도록
                 .addFilterBefore(new TokenValidationFilter(tokenService), AuthorizationFilter.class)
                 // oauth2Login
@@ -63,7 +67,8 @@ public class SecurityConfig {
                         )
                 // logout : 사용자에게 token 지워주기 + redis에서도 지우기, 기본적으로 JSESSION_ID 쿠키값을 지운다고 함
                 .logout(logout -> logout
-                        .deleteCookies("access_token", "JSESSION_ID")
+                        .permitAll()
+//                        .deleteCookies("access_token", "JSESSION_ID")
                         .logoutSuccessHandler(logoutHandler))
                 .build();
     }

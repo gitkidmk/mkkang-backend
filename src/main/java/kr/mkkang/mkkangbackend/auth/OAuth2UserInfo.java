@@ -3,13 +3,16 @@ package kr.mkkang.mkkangbackend.auth;
 import kr.mkkang.mkkangbackend.domain.Member;
 import kr.mkkang.mkkangbackend.domain.MemberRole;
 import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
 import java.util.Map;
 
 /*
 *  userInfo를 google/kakao에 맞춰 Member 엔티티에 저장할 수 있게 수정
 */
 
+@Slf4j
 @Builder
 public record OAuth2UserInfo(
         String name,
@@ -19,6 +22,7 @@ public record OAuth2UserInfo(
 ) {
 
     public static OAuth2UserInfo of(String registrationId, Map<String, Object> attributes) {
+        log.debug("OAuth2UserInfo: {}", attributes);
         return switch (registrationId) { // registration id별로 userInfo 생성
             case "google" -> ofGoogle(attributes);
             case "kakao" -> ofKakao(attributes);
@@ -49,11 +53,11 @@ public record OAuth2UserInfo(
 
     public Member toEntity() {
          return Member.builder()
-                .name(name)
-                .email(email)
-                .profile(profile)
-                .registrationId(registrationId)
-                .role(MemberRole.ANYONE)
-                .build();
+                 .name(name)
+                 .email(email)
+                 .profile(profile)
+                 .registrationId(registrationId)
+                 .role(MemberRole.ANYONE)
+                 .build();
     }
 }

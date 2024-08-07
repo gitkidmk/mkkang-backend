@@ -39,7 +39,7 @@ public class TokenValidationFilter implements Filter {
         String requestURL = request.getRequestURL().toString();
         log.debug("requestURL = {}", requestURL);
 
-        if(!requestURL.contains("/login") && !requestURL.contains("/oauth2") && !requestURL.contains("/error")) {
+        if(!requestURL.contains("/login") && !requestURL.contains("/oauth2") && !requestURL.contains("/error") && !requestURL.contains("/logout")) {
             accessToken = tokenService.validateAccessToken(accessToken);
 
             // 3. response에 담는다

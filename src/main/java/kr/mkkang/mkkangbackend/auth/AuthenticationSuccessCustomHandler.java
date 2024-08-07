@@ -38,11 +38,13 @@ public class AuthenticationSuccessCustomHandler implements AuthenticationSuccess
 
         String userEmail = defaultOAuth2User.getAttribute("email");
         String registrationId = defaultOAuth2User.getAttribute("registrationId");
+        String role = defaultOAuth2User.getAuthorities().toString();
 
         log.debug("defaultOAuth2User = {}", defaultOAuth2User);
         log.debug("name = {}", name);
         log.debug("userEmail = {}", userEmail);
         log.debug("registrationId = {}", registrationId);
+        log.debug("role = {}", role);
 
 
 //        String tokenKey = userEmail + ":" + registrationId;
@@ -56,20 +58,38 @@ public class AuthenticationSuccessCustomHandler implements AuthenticationSuccess
         tokenService.saveToken(accessToken, refreshToken);
 
         // token 전달하기
-        Cookie cookie = new Cookie("access_token", accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false); // TODO: HTTPS에서만 전송되도록 설정 : 추후 true로 변경
-        cookie.setMaxAge(60*10);
-        cookie.setPath("/");
-        cookie.setDomain("localhost");
+        Cookie accessCookie = new Cookie("access_token", accessToken);
+        accessCookie.setHttpOnly(true);
+        accessCookie.setSecure(false); // TODO: HTTPS에서만 전송되도록 설정 : 추후 true로 변경
+        accessCookie.setMaxAge(60*10);
+        accessCookie.setPath("/");
+        accessCookie.setDomain("localhost");
 
-        log.debug("cookie.getName() = {}", cookie.getName());
-        log.debug("cookie.getValue() = {}", cookie.getValue());
+        Cookie roleCookie = new Cookie("role", role);
+        roleCookie.setSecure(false); // TODO: HTTPS에서만 전송되도록 설정 : 추후 true로 변경
+        roleCookie.setMaxAge(60*10);
+        roleCookie.setPath("/");
+        roleCookie.setDomain("localhost");
 
-        response.addCookie(cookie);
+//        // CSRF 토큰 생성
+//        CsrfToken csrfToken = csrfTokenRepository.generateToken(request);
+//        csrfTokenRepository.saveToken(csrfToken, request, response);
+//
+////        // CSRF 토큰을 쿠키에 설정
+//        Cookie csrfCookie = new Cookie("XSRF-TOKEN", csrfToken.getToken());
+//        csrfCookie.setPath("/");
+//        csrfCookie.setHttpOnly(false); // JavaScript에서 접근할 수 있도록 설정
+//        response.addCookie(csrfCookie);
+
+        log.debug("accessCookie.getName() = {}", accessCookie.getName());
+        log.debug("accessCookie.getValue() = {}", accessCookie.getValue());
+
+        response.addCookie(accessCookie);
+        response.addCookie(roleCookie);
+//        response.addCookie(csrfCookie);
 
         // 리다이렉트??
-        response.sendRedirect("http://localhost:3000");
+        response.sendRedirect("http://localhost:3000/main");
 
     }
 }
