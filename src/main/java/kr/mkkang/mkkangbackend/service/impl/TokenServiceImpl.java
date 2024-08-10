@@ -145,7 +145,7 @@ public class TokenServiceImpl implements TokenService {
     public String validateAccessToken(String accessToken) {
         String result = VALIDATION_FAILED;
 
-        if(getSubjectFromToken(ACCESS_TOKEN, accessToken) != null) {
+        if(getSubjectFromToken(ACCESS_TOKEN, accessToken) != null && !accessToken.isEmpty()) {
             if(isTokenExpirationPass(ACCESS_TOKEN, accessToken)) {
                 result = accessToken;
             } else {
@@ -159,7 +159,10 @@ public class TokenServiceImpl implements TokenService {
                     result = newAccessToken;
                 }
             }
+        } else {
+            throw new JwtException(VALIDATION_FAILED);
         }
+
         return result;
     }
 
