@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @NoArgsConstructor
@@ -21,6 +22,7 @@ public class Member {
 
     private String registrationId;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MemberRole role;
@@ -39,5 +41,4 @@ public class Member {
         this.profile = profile;
         return this;
     }
-
 }

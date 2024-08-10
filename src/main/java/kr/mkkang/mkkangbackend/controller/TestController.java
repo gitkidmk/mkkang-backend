@@ -1,12 +1,15 @@
 package kr.mkkang.mkkangbackend.controller;
 
 import kr.mkkang.mkkangbackend.domain.Member;
+import kr.mkkang.mkkangbackend.redis.ChangeRoleRequestDto;
 import kr.mkkang.mkkangbackend.redis.Token;
 import kr.mkkang.mkkangbackend.redis.TokenRepository;
 import kr.mkkang.mkkangbackend.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,8 +30,14 @@ public class TestController {
     }
 
     @GetMapping("/admin")
-    public void admin() {
-        log.info("admin");
+    public List<Member> admin() {
+        return memberService.getAllMembers();
+    }
+
+    // TODO: RequestBody 통해 수정할 내역 받아오기
+    @PostMapping("/admin/role")
+    public Member changeRole(@RequestBody ChangeRoleRequestDto requestDto) {
+        return memberService.postMember(requestDto);
     }
 
     @GetMapping("/family")
