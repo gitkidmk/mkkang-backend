@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import kr.mkkang.mkkangbackend.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -19,6 +20,12 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Component
 public class AuthenticationSuccessCustomHandler implements AuthenticationSuccessHandler {
+
+    @Value("${client.ip}")
+    private String domain;
+
+    @Value("${client.port}")
+    private int port;
 
     private final TokenService tokenService;
 
@@ -63,13 +70,13 @@ public class AuthenticationSuccessCustomHandler implements AuthenticationSuccess
         accessCookie.setSecure(false); // TODO: HTTPS에서만 전송되도록 설정 : 추후 true로 변경
         accessCookie.setMaxAge(60*10);
         accessCookie.setPath("/");
-        accessCookie.setDomain("localhost");
+        accessCookie.setDomain(domain);
 
         Cookie roleCookie = new Cookie("role", role);
         roleCookie.setSecure(false); // TODO: HTTPS에서만 전송되도록 설정 : 추후 true로 변경
         roleCookie.setMaxAge(60*10);
         roleCookie.setPath("/");
-        roleCookie.setDomain("localhost");
+        roleCookie.setDomain(domain);
 
 //        // CSRF 토큰 생성
 //        CsrfToken csrfToken = csrfTokenRepository.generateToken(request);
@@ -89,7 +96,12 @@ public class AuthenticationSuccessCustomHandler implements AuthenticationSuccess
 //        response.addCookie(csrfCookie);
 
         // 리다이렉트??
-        response.sendRedirect("http://localhost:3000/main");
+        String url = "http://" + domain + ":"+ port +"/main";
+        String url2 = "http://%s:%s/main".formatted(domain, port);
+        response.sendRedirect(url);
+        log.info("url = {}", url);
+        log.info("url2 = {}", url2);
+        log.info("response = {}", response);
 
     }
 }

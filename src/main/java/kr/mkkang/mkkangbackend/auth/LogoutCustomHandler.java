@@ -7,8 +7,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import kr.mkkang.mkkangbackend.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +18,12 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Component
 public class LogoutCustomHandler implements LogoutSuccessHandler {
+
+    @Value("${client.ip}")
+    private String ip;
+
+    @Value("${client.port}")
+    private int port;
 
     private final TokenService tokenService;
 
@@ -48,7 +54,7 @@ public class LogoutCustomHandler implements LogoutSuccessHandler {
         // logout에서 default response가 궁금하군...
         // 리다이렉트??
         try {
-            response.sendRedirect("http://localhost:3000");
+            response.sendRedirect("http://%s:%s".formatted(ip, port));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

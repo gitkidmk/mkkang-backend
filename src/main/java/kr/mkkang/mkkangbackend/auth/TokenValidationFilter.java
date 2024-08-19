@@ -38,12 +38,14 @@ public class TokenValidationFilter implements Filter {
         // 2. validateToken에 넘긴다
         String requestURL = request.getRequestURL().toString();
         log.debug("requestURL = {}", requestURL);
-        if(accessToken == null || accessToken.isEmpty()) {
-            log.error("accesstoken = {}", accessToken);
-            throw new IOException("Invalid access token");
-        }
 
         if(!requestURL.contains("/login") && !requestURL.contains("/oauth2") && !requestURL.contains("/error") && !requestURL.contains("/logout")) {
+
+            if(accessToken == null || accessToken.isEmpty()) {
+                log.error("accesstoken = {}", accessToken);
+                throw new IOException("Invalid access token");
+            }
+
             accessToken = tokenService.validateAccessToken(accessToken);
 
             // 3. response에 담는다

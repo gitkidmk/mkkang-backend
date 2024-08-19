@@ -6,6 +6,8 @@ import kr.mkkang.mkkangbackend.auth.LogoutCustomHandler;
 import kr.mkkang.mkkangbackend.auth.TokenValidationFilter;
 import kr.mkkang.mkkangbackend.service.TokenService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,18 +16,23 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
+@Slf4j
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
+
+    @Value("${client.ip}")
+    private String ip;
+
+    @Value("${client.port}")
+    private int port;
 
     private final OAuth2UserCustomService oAuth2UserService;
     private final TokenService tokenService;
@@ -68,6 +75,7 @@ public class SecurityConfig {
                 // logout : 사용자에게 token 지워주기 + redis에서도 지우기, 기본적으로 JSESSION_ID 쿠키값을 지운다고 함
                 .logout(logout -> logout
                         .permitAll()
+                        .logoutSuccessUrl("http://%s:%s/".formatted(ip, port))
 //                        .deleteCookies("access_token", "JSESSION_ID")
                         .logoutSuccessHandler(logoutHandler))
                 .build();
@@ -83,7 +91,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // 허용할 도메인 설정
+        configuration.setAllowedOrigins(Arrays.asList("http://{0}:{1}".formatted(ip, port))); // 허용할 도메인 설정
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

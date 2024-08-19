@@ -66,14 +66,14 @@ public class TokenServiceImpl implements TokenService {
         try {
             tokenRepository.save(new Token(accessToken, refreshToken));
         } catch (DataAccessException e) {
-            log.error("error =", e.getMessage());
+            log.error("error 1 = {}", e.toString());
         }
     }
     public void removeToken(String accessToken) {
         try {
             tokenRepository.deleteById(accessToken);
         } catch (DataAccessException e) {
-            log.error("error =", e.getMessage());
+            log.error("error 2 = {}", e.getMessage());
         }
     }
 
@@ -103,7 +103,7 @@ public class TokenServiceImpl implements TokenService {
                     .parseSignedClaims(token)
                     .getPayload();
         } catch(Exception e) {
-            log.error("error =", e.getMessage());
+            log.error("error 3", e.getMessage());
 
         }
         return claims;

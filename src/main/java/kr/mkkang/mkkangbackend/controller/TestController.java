@@ -23,7 +23,7 @@ public class TestController {
     @Autowired
     MemberService memberService;
 
-    @GetMapping("/")
+    @GetMapping("/login/tmp")
     public void test() {
         Token saved = tokenRepository.save(new Token("abc", "cdf"));
         log.info(saved.toString());
