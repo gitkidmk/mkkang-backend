@@ -15,3 +15,5 @@ out/
 !**/src/test/**/out/
 
 .env
+.env.stage
+.env.production

@@ -7,3 +7,4 @@ spring:
             client-id: ${CLIENT_ID}
             client-secret: ${CLIENT_SECRET}
             scope: profile,email
+            redirect-uri: http://localhost:8080/login/oauth2/code/google

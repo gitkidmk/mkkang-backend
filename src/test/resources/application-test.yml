@@ -27,3 +27,8 @@ jwt:
   refreshtoken:
     secretkey: ${REFRESH_SECRET_KEY}
     expiration: 3600
+
+client:
+  ip: ${CLIENT_IP}
+  port: ${CLIENT_PORT}
+

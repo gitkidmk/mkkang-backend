@@ -21,8 +21,10 @@ spring:
   data:
     redis:
       host: ${REDIS_HOST}
-      password: ${REDIS_PW}
       port: ${REDIS_PORT}
+      password: ${REDIS_PW}
+      ssl:
+        enabled: true
 jwt:
   accesstoken:
     secretkey: ${ACCESS_SECRET_KEY}
@@ -30,6 +32,10 @@ jwt:
   refreshtoken:
     secretkey: ${REFRESH_SECRET_KEY}
     expiration: 3600
+
+client:
+  ip: ${CLIENT_IP}
+  port: ${CLIENT_PORT}
 
 logging:
   level:
