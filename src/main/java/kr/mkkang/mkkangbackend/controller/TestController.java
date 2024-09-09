@@ -29,6 +29,11 @@ public class TestController {
         log.info(saved.toString());
     }
 
+    @GetMapping("/main")
+    public void main() {
+        log.info("this is main call");
+    }
+
     @GetMapping("/admin")
     public List<Member> admin() {
         return memberService.getAllMembers();
