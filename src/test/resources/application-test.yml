@@ -31,4 +31,5 @@ jwt:
 client:
   ip: ${CLIENT_IP}
   port: ${CLIENT_PORT}
+  protocol: ${CLIENT_PROTOCOL}
 

@@ -2,13 +2,13 @@ package kr.mkkang.mkkangbackend.auth;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.mkkang.mkkangbackend.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -26,6 +26,9 @@ public class AuthenticationSuccessCustomHandler implements AuthenticationSuccess
 
     @Value("${client.port}")
     private int port;
+
+    @Value("${client.protocol}")
+    private String protocol;
 
     private final TokenService tokenService;
 
@@ -63,45 +66,30 @@ public class AuthenticationSuccessCustomHandler implements AuthenticationSuccess
 
         // token 저장하기
         tokenService.saveToken(accessToken, refreshToken);
-
         // token 전달하기
-        Cookie accessCookie = new Cookie("access_token", accessToken);
-        accessCookie.setHttpOnly(true);
-        accessCookie.setSecure(false); // TODO: HTTPS에서만 전송되도록 설정 : 추후 true로 변경
-        accessCookie.setMaxAge(60*10);
-        accessCookie.setPath("/");
-        accessCookie.setDomain(domain);
+        ResponseCookie accessCookie = ResponseCookie.from("access_token", accessToken)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .domain("." + domain)
+                .maxAge(60*10)
+                .build();
 
-        Cookie roleCookie = new Cookie("role", role);
-        roleCookie.setSecure(false); // TODO: HTTPS에서만 전송되도록 설정 : 추후 true로 변경
-        roleCookie.setMaxAge(60*10);
-        roleCookie.setPath("/");
-        roleCookie.setDomain(domain);
+        ResponseCookie roleCookie = ResponseCookie.from("role", role)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .domain("." + domain)
+                .maxAge(60*10)
+                .build();
 
-//        // CSRF 토큰 생성
-//        CsrfToken csrfToken = csrfTokenRepository.generateToken(request);
-//        csrfTokenRepository.saveToken(csrfToken, request, response);
-//
-////        // CSRF 토큰을 쿠키에 설정
-//        Cookie csrfCookie = new Cookie("XSRF-TOKEN", csrfToken.getToken());
-//        csrfCookie.setPath("/");
-//        csrfCookie.setHttpOnly(false); // JavaScript에서 접근할 수 있도록 설정
-//        response.addCookie(csrfCookie);
-
-        log.debug("accessCookie.getName() = {}", accessCookie.getName());
-        log.debug("accessCookie.getValue() = {}", accessCookie.getValue());
-
-        response.addCookie(accessCookie);
-        response.addCookie(roleCookie);
-//        response.addCookie(csrfCookie);
+        response.addHeader("Set-Cookie", accessCookie.toString());
+        response.addHeader("Set-Cookie", roleCookie.toString());
 
         // 리다이렉트??
-        String url = "http://" + domain + ":"+ port +"/main";
-        String url2 = "http://%s:%s/main".formatted(domain, port);
+        String url = "%s://%s:%s/main".formatted(protocol, domain, port);
         response.sendRedirect(url);
         log.info("url = {}", url);
-        log.info("url2 = {}", url2);
-        log.info("response = {}", response);
 
     }
 }

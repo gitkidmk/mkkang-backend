@@ -34,6 +34,9 @@ public class SecurityConfig {
     @Value("${client.port}")
     private int port;
 
+    @Value("${client.protocol}")
+    private String protocol;
+
     private final OAuth2UserCustomService oAuth2UserService;
     private final TokenService tokenService;
     private final LogoutCustomHandler logoutHandler;
@@ -50,7 +53,7 @@ public class SecurityConfig {
         // 그중에서도 addFilter, authorizeHttpRequest, cors, csrf, oauth2Login, logout
         return http
                 // cors
-                .cors(Customizer.withDefaults()) // 이거 지워도 cross origin resource shared 막아줘야함
+                .cors(cors -> cors.disable()) // TODO: 특정 domain만 cors open 하도록 설정
                 // csrf
 //                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .csrf(csrf -> csrf.disable())
@@ -75,7 +78,7 @@ public class SecurityConfig {
                 // logout : 사용자에게 token 지워주기 + redis에서도 지우기, 기본적으로 JSESSION_ID 쿠키값을 지운다고 함
                 .logout(logout -> logout
                         .permitAll()
-                        .logoutSuccessUrl("http://%s:%s/".formatted(ip, port))
+                        .logoutSuccessUrl("%s://%s:%s/".formatted(protocol, ip, port))
 //                        .deleteCookies("access_token", "JSESSION_ID")
                         .logoutSuccessHandler(logoutHandler))
                 .build();
@@ -91,7 +94,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://{0}:{1}".formatted(ip, port))); // 허용할 도메인 설정
+        configuration.setAllowedOrigins(Arrays.asList("%s://%s:%s".formatted(protocol, ip, port))); // 허용할 도메인 설정
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

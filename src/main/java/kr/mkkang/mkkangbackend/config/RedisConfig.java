@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 
 @Slf4j
 @Configuration
@@ -27,14 +26,6 @@ public class RedisConfig {
         config.setHostName(redisHost);
         config.setPort(redisPort);
         return new LettuceConnectionFactory(config);
-    }
-
-    @Bean
-    public RedisTemplate<String, String> redisTemplate() {
-        RedisTemplate<String, String> template = new RedisTemplate<>();
-        template.setConnectionFactory(this.connectionFactory());
-        log.info("connectionFactory: {}", this.connectionFactory().getConnection());
-        return template;
     }
 
 }

@@ -31,12 +31,4 @@ public class MkkangBackendApplication {
     public static void main(String[] args) {
         SpringApplication.run(MkkangBackendApplication.class, args);
     }
-
-    @PostConstruct
-    public void variables() {
-        log.info("dbUrl: {}", dbUrl);
-        log.info("clientId: {}", clientId);
-        log.info("REDIS_HOST: {}", redisHost);
-    }
-
 }
